@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Pure Expense Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--bg:#0B0F17;--card:#131A27;--line:#1E293B;--tx:#F8FAFC;--mu:#94A3B8;--bl:#2563EB;--bll:#60A5FA;--rd:#F87171;--or:#F97316;color-scheme:dark;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text!important;user-select:text!important}
+html,body{touch-action:pan-x pan-y;overscroll-behavior:none}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,sans-serif}
+#app{max-width:430px;height:100%;margin:0 auto;position:relative;display:flex;flex-direction:column}
+#main{flex:1;overflow-y:auto;padding:40px 20px 24px}
+#foot{border-top:1px solid var(--line);background:#0F1420;padding:8px 12px 10px;display:flex;justify-content:space-around}
+button{all:unset;cursor:pointer;box-sizing:border-box}
+button:focus-visible,input:focus-visible{outline:2px solid var(--bll);outline-offset:2px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;width:72px;min-height:48px;font-size:11px;font-weight:600;color:var(--mu)}
+.tab.on{color:var(--bll)}
+h1{font-size:24px;margin:0;font-weight:700}
+.sub{font-size:13px;color:var(--mu);margin-top:2px}
+.card{background:var(--card);border-radius:20px;padding:16px;margin-top:14px}
+.row{display:flex;align-items:center;gap:12px}
+.lbl{font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--mu)}
+.hero{background:var(--bl);border-radius:22px;padding:18px 20px;margin-top:14px;color:#fff}
+.seg{display:flex;background:var(--card);border-radius:14px;padding:4px;margin-top:14px}
+.seg button{flex:1;text-align:center;height:36px;line-height:36px;border-radius:11px;font-size:13px;font-weight:600;color:var(--mu)}
+.seg button.on{background:var(--bl);color:#fff}
+.chip{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:10px 12px;margin-top:8px}
+.item b{font-size:14px;font-weight:600;display:block}.item small{font-size:12px;color:var(--mu)}
+.bar{height:8px;border-radius:4px;background:var(--line);margin-top:8px}.bar i{display:block;height:8px;border-radius:4px}
+.ib{width:44px;height:44px;border-radius:14px;background:var(--card);display:flex;align-items:center;justify-content:center;flex:none}
+.fab{position:absolute;right:20px;bottom:92px;width:56px;height:56px;border-radius:18px;background:var(--bl);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px #0008}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 8px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--mu);min-height:44px}
+.cat div{width:56px;height:56px;border-radius:18px;background:var(--card);display:flex;align-items:center;justify-content:center}
+.cat.on{color:var(--bll)}.cat.on div{background:var(--bl);box-shadow:0 0 0 2px #93C5FD}.cl{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:0 16px;height:52px;margin-top:10px;color:var(--mu)}
+.field input{all:unset;flex:1;color:var(--tx);font:500 14px Inter,sans-serif;min-width:0}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.keys button{height:46px;border-radius:12px;background:var(--card);text-align:center;line-height:46px;font-size:20px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.save{flex:1;height:52px;border-radius:16px;background:var(--bl);color:#fff;text-align:center;line-height:52px;font-size:16px;font-weight:700}
+.lim{width:72px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--tx);font:600 13px Inter,sans-serif;padding:6px 8px;text-align:right}
+.mb{all:unset;flex:1;min-width:0;color:#fff;font:800 34px Inter,sans-serif;border-bottom:2px dashed #ffffff66;padding-bottom:2px}
+.mb::placeholder{color:#ffffff99;font-size:22px;font-weight:700}
+.mb::-webkit-outer-spin-button,.mb::-webkit-inner-spin-button,.lim::-webkit-outer-spin-button,.lim::-webkit-inner-spin-button,.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.sw{width:48px;height:28px;border-radius:14px;background:var(--line);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:11px;background:#fff;transition:left .15s}
+.sw.on{background:var(--bl)}.sw.on::after{left:23px}
+.set{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 14px;border-bottom:1px solid var(--line)}
+.set:last-child{border:0}
+#toast{position:absolute;left:20px;right:20px;bottom:96px;z-index:30;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:12px 16px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+#abar{position:absolute;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:40;display:none}
+.done{position:absolute;right:20px;bottom:92px;z-index:25;width:52px;height:52px;border-radius:26px;background:#16A34A;display:none;align-items:center;justify-content:center;box-shadow:0 6px 20px #0008}
+</style></head>
+<body><div id="app"><main id="main"></main><nav id="foot"></nav><div id="sheet"></div><div id="toast" role="status"></div><div id="abar"></div><button id="done" class="done" data-a="done" aria-label="Done"></button></div>
+<script>
+const $=s=>document.querySelector(s);
+const IC={home:'<path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',chart:'<path d="M5 21V11M12 21V4M19 21v-7"/>',wallet:'<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM3 7V6a2 2 0 0 1 2-2h12M16 14h2"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',plus:'<path d="M12 5v14M5 12h14"/>',food:'<path d="M4 11h16a8 8 0 0 0-16 0zM4 15h16M5 19h14"/>',bus:'<rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8 21l1-4M16 21l-1-4"/>',bag:'<path d="M5 8h14l-1 13H6zM9 8a3 3 0 0 1 6 0"/>',bill:'<path d="M6 3h9l4 4v14H6zM9 12h6M9 16h6"/>',film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v14M16 5v14M3 12h18"/>',heart:'<path d="M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z"/>',cap:'<path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5"/>',back:'<path d="M15 6l-6 6 6 6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16zM13 7l4 4"/>',cal:'<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',check:'<path d="M5 12l5 5L20 7"/>',bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',shield:'<path d="M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>',tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/>'};
+const I=(n,c='currentColor',s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
+const CATS0=[{k:'food',n:'Food',c:'#F97316',i:'food'},{k:'transit',n:'Transit',c:'#3B82F6',i:'bus'},{k:'shop',n:'Shop',c:'#EC4899',i:'bag'},{k:'bills',n:'Bills',c:'#10B981',i:'bill'},{k:'fun',n:'Entertain',c:'#8B5CF6',i:'film'},{k:'health',n:'Health',c:'#EF4444',i:'heart'},{k:'home',n:'Home',c:'#06B6D4',i:'home'},{k:'edu',n:'Edu',c:'#F59E0B',i:'cap'}];
+let CATS=CATS0.slice();const CM={};const refreshCats=()=>{CATS=(S.cats||CATS0).slice();for(const k in CM)delete CM[k];CATS.forEach(c=>CM[c.k]=c)};
+const ini=c=>(String(c.n||'?').trim()[0]||'?').toUpperCase();
+const ci=(c,col,s)=>c.i&&IC[c.i]?I(c.i,col,s):`<span style="font-size:${Math.round(s*.85)}px;font-weight:800;line-height:1;color:${col}">${esc(ini(c))}</span>`;
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const money=n=>'₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+/* Put your app download link here later (e.g. Play Store link). Leave '' for now. */
+const SHARE_LINK='';
+const shareMsg='Check out Pure Expense Tracker, a simple app to track your daily expenses and budget.'+(SHARE_LINK?' '+SHARE_LINK:'');
+const waHref=()=>'https://wa.me/?text='+encodeURIComponent(shareMsg);
+const mailHref=()=>'mailto:?subject='+encodeURIComponent('Pure Expense Tracker')+'&body='+encodeURIComponent(shareMsg);
+/* Fresh storage key (pet3): old demo data from earlier versions is ignored */
+let S={ex:[],bud:{},mb:0,alert:true,thr:80,name:'',onb:false,cats:null,photo:''};
+try{const r=localStorage.getItem('pet3');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+/* Categories now live in S.cats so any of them can be added or removed. Older saves are converted here. */
+if(!Array.isArray(S.cats)||!S.cats.length)S.cats=CATS0.map(c=>Object.assign({},c)).concat((S.custom||[]).map(c=>({k:c.k,n:c.n,c:c.c})));
+delete S.custom;
+const save=()=>{try{localStorage.setItem('pet3',JSON.stringify(S))}catch(e){}};
+refreshCats();
+let V='home',PH='Month',PS='Week',A=null,armed=false,CR=false,PI=false,AR=false,DC=null,NC={open:false,n:'',c:'#A3E635'};
+function sheet(){const L=(href,ic,c,t,v,ex='')=>`<a class="item" href="${href}" ${ex} style="text-decoration:none;color:inherit;margin-top:10px;background:var(--bg)"><div class="chip" style="background:${c}26">${I(ic,c,20)}</div><div style="flex:1;min-width:0"><b>${t}</b><small>${v}</small></div></a>`;
+ return `<button data-a="closecr" aria-label="Close" style="position:absolute;inset:0;background:#000A;z-index:10;cursor:default"></button><div role="dialog" aria-modal="true" aria-label="Cooked by Anas" style="position:absolute;left:0;right:0;bottom:0;z-index:11;background:var(--card);border-radius:24px 24px 0 0;padding:12px 20px calc(24px + env(safe-area-inset-bottom,0px))"><div style="width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px"></div><div style="font-size:20px;font-weight:700">Cooked by Anas</div><div class="sub">Get in touch or follow along</div>${L('mailto:anasakhtar0110@gmail.com','mail','#60A5FA','Email','anasakhtar0110@gmail.com')}${L('https://instagram.com/anasakhtarr','ig','#EC4899','Instagram','@anasakhtarr','target="_blank" rel="noopener"')}<button data-a="closecr" class="save" style="display:block;margin-top:16px;background:var(--bg)">Close</button></div>`}
+function nameModal(){return `<button data-a="closepi" aria-label="Close" style="position:absolute;inset:0;background:#000A;z-index:10;cursor:default"></button><div role="dialog" aria-modal="true" aria-label="Personal info" style="position:absolute;left:20px;right:20px;top:90px;z-index:11;background:var(--card);border-radius:24px;padding:20px"><div style="font-size:20px;font-weight:800;color:#fff">Personal info</div><div class="sub">This name is shown on your home screen</div><label class="field" style="background:var(--bg);margin-top:16px">${I('user','#94A3B8',20)}<input id="pname" value="${esc(S.name)}" placeholder="Your name" maxlength="24" autocomplete="off" aria-label="Your name" style="font-size:16px;font-weight:700;color:#fff"></label><div class="row" style="margin-top:16px"><button data-a="closepi" class="save" style="background:var(--bg)">Cancel</button><button data-a="pisave" class="save">Save</button></div></div>`}
+function alertModal(){return `<button data-a="closear" aria-label="Close" style="position:absolute;inset:0;background:#000A;z-index:10;cursor:default"></button><div role="dialog" aria-modal="true" aria-label="Alert rules" style="position:absolute;left:20px;right:20px;top:90px;z-index:11;background:var(--card);border-radius:24px;padding:20px"><div style="font-size:20px;font-weight:800;color:#fff">Alert rules</div><div class="sub">Warn me when a category reaches this much of its limit</div><div class="row" style="flex-wrap:wrap;gap:8px;margin-top:16px">${[50,60,70,80,90,100].map(p=>`<button data-a="arp" data-v="${p}" style="padding:10px 14px;border-radius:12px;background:var(--bg);font-size:13px;font-weight:700;color:var(--tx)">${p}%</button>`).join('')}</div><label class="field" style="background:var(--bg);margin-top:14px"><input id="arval" type="number" inputmode="numeric" min="1" max="100" value="${S.thr}" aria-label="Alert percent" style="font-size:16px;font-weight:700;color:#fff"><span style="font-weight:700">%</span></label><div class="row" style="margin-top:16px"><button data-a="closear" class="save" style="background:var(--bg)">Cancel</button><button data-a="arsave" class="save">Save</button></div></div>`}
+const SW=['#A3E635','#FACC15','#FB7185','#38BDF8','#C084FC','#2DD4BF','#FB923C','#E879F9'];
+function newPanel(){return `<div class="card"><div class="lbl" style="margin-bottom:10px">NEW CATEGORY</div><label class="field" style="margin-top:0;border:1px solid #F8FAFC">${I('tag','#94A3B8',20)}<input id="ncname" placeholder="e.g. Pets, Gym, Gifts" maxlength="14" value="${esc(NC.n)}"></label><div class="row" style="gap:10px;margin:12px 0;flex-wrap:wrap">${SW.map(c=>`<button data-a="ncolor" data-c="${c}" aria-label="Color ${c}" aria-pressed="${NC.c==c}" style="width:36px;height:36px;border-radius:12px;background:${c};box-shadow:${NC.c==c?'0 0 0 3px #131A27,0 0 0 5px '+c:'none'}"></button>`).join('')}</div><button data-a="addcat" class="save" style="display:block;height:46px;line-height:46px">Add category</button><div class="lbl" style="margin:14px 0 8px">ALL CATEGORIES (TAP X TO REMOVE)</div><div class="row" style="flex-wrap:wrap;gap:8px">${CATS.map(c=>`<span class="row" style="gap:6px;background:var(--bg);border-radius:10px;padding:4px 4px 4px 10px;font-size:12px;font-weight:600;color:${c.c}">${esc(c.n)}<button data-a="delcat" data-c="${c.k}" aria-label="Delete ${esc(c.n)}" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center">${I('x',DC==c.k?'#F87171':'#94A3B8',14)}</button></span>`).join('')}</div></div>`}
+function range(p,off=0){const t=today();let a,b;
+ if(p=='Week'){a=new Date(t);a.setDate(t.getDate()-((t.getDay()+6)%7)+7*off);b=new Date(a);b.setDate(a.getDate()+7)}
+ else if(p=='Month'){a=new Date(t.getFullYear(),t.getMonth()+off,1);b=new Date(t.getFullYear(),t.getMonth()+off+1,1)}
+ else{a=new Date(t.getFullYear()+off,0,1);b=new Date(t.getFullYear()+off+1,0,1)}
+ return [a,b]}
+const dt=e=>new Date(e.d+'T00:00:00');
+const inR=(e,[a,b])=>{const d=dt(e);return d>=a&&d<b};
+const sum=l=>l.reduce((s,e)=>s+e.a,0);
+const inP=(p,o=0)=>S.ex.filter(e=>inR(e,range(p,o)));
+const byCat=l=>{const m={};l.forEach(e=>m[e.c]=(m[e.c]||0)+e.a);return m};
+const seg=(cur,act)=>`<div class="seg">${['Week','Month','Year'].map(p=>`<button data-a="${act}" data-p="${p}" class="${p==cur?'on':''}">${p}</button>`).join('')}</div>`;
+function donut(bc,tot){const sz=132,r=50,m=sz/2,C=2*Math.PI*r;let off=0;
+ let s=`<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" role="img" aria-label="Spending by category"><circle cx="${m}" cy="${m}" r="${r}" fill="none" stroke="#1E293B" stroke-width="16"/><g transform="rotate(-90 ${m} ${m})">`;
+ CATS.forEach(c=>{const v=bc[c.k]||0;if(!v)return;const L=C*v/tot;s+=`<circle cx="${m}" cy="${m}" r="${r}" fill="none" stroke="${c.c}" stroke-width="16" stroke-dasharray="${Math.max(L-2,1).toFixed(1)} ${(C-L+2).toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}"/>`;off+=L});
+ return s+`</g><text x="${m}" y="${m}" text-anchor="middle" font-size="19" font-weight="800" fill="#F8FAFC" font-family="Inter,sans-serif">${tot>=100000?'₹'+(tot/100000).toFixed(1)+'L':tot>=1000?'₹'+(tot/1000).toFixed(1)+'k':'₹'+Math.round(tot)}</text><text x="${m}" y="${m+16}" text-anchor="middle" font-size="11" font-weight="700" fill="#94A3B8" font-family="Inter,sans-serif">SPENT</text></svg>`}
+const when=d=>{const t=ymd(today()),y=new Date();y.setDate(y.getDate()-1);return d==t?'Today':d==ymd(y)?'Yesterday':new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+const item=e=>{const c=CM[e.c]||{n:'Other',c:'#94A3B8'};return `<div class="item"><div class="chip" style="background:${c.c}26">${ci(c,c.c,20)}</div><div style="flex:1;min-width:0"><b>${esc(e.n||c.n)}</b><small>${c.n} · ${when(e.d)}</small></div><div style="font-size:14px;font-weight:700;color:var(--rd)">-${money(e.a)}</div><button class="ib" style="width:36px;height:36px;border-radius:10px;background:transparent" data-a="del" data-id="${e.id}" aria-label="Delete expense">${I('x','#94A3B8',16)}</button></div>`};
+function welcome(){return `<div style="padding-top:12vh"><div style="width:72px;height:72px;border-radius:22px;background:var(--bl);display:flex;align-items:center;justify-content:center">${I('wallet','#fff',34)}</div><h1 style="font-size:30px;font-weight:800;margin-top:24px;color:#fff">Welcome to Pure Expense Tracker</h1><div class="sub" style="font-size:15px;margin-top:8px">Let's get started. What should we call you?</div><label class="field" style="margin-top:24px">${I('user','#94A3B8',20)}<input id="wname" placeholder="Your name" maxlength="24" autocomplete="off" style="font-size:16px;font-weight:600"></label><button data-a="wsave" class="save" style="display:block;margin-top:16px">Continue</button></div>`}
+function alerts(){if(!S.alert)return[];const o=[],mb=+S.mb||0,bc=byCat(inP('Month')),tsp=sum(inP('Month'));
+ if(mb&&tsp/mb*100>=S.thr)o.push(tsp>mb?'You are over your monthly budget ('+money(tsp)+' of '+money(mb)+')':'You have used '+Math.round(tsp/mb*100)+'% of your monthly budget ('+money(tsp)+' of '+money(mb)+')');
+ CATS.forEach(c=>{const l=+S.bud[c.k]||0,x=bc[c.k]||0;if(l&&x/l*100>=S.thr)o.push(esc(c.n)+': '+Math.round(x/l*100)+'% of its limit ('+money(x)+' of '+money(l)+')')});return o}
+const alertBox=()=>{const a=alerts();return a.length?`<div role="alert" style="margin-top:14px;background:#431407;border:1px solid #9A3412;border-radius:16px;padding:12px 14px"><div style="font-size:13px;font-weight:700;color:#FDBA74;margin-bottom:6px">Budget alert (at ${S.thr}%)</div>${a.map(t=>`<div style="font-size:13px;line-height:1.5;color:#FED7AA">${t}</div>`).join('')}</div>`:''};
+let at;function popAlert(a){const e=$('#abar');e.innerHTML=`<button data-a="abclose" role="alert" style="display:block;width:100%;text-align:left;background:#431407;border:1px solid #EA580C;border-radius:14px;padding:12px 14px;color:#FED7AA;box-shadow:0 8px 24px #000A"><div style="font-size:13px;font-weight:700;color:#FDBA74">Budget alert</div>${a.map(t=>`<div style="font-size:13px;margin-top:4px">${t}</div>`).join('')}<div style="font-size:11px;color:#FDBA74;margin-top:6px">Tap to dismiss</div></button>`;e.style.display='block';clearTimeout(at);at=setTimeout(()=>{e.style.display='none'},9000);try{navigator.vibrate&&navigator.vibrate(200)}catch(x){}}
+function home(){const L=inP(PH),tot=sum(L),pv=sum(inP(PH,-1)),bc=byCat(L),lp=PH.toLowerCase();
+ const top=CATS.filter(c=>bc[c.k]).sort((a,b)=>bc[b.k]-bc[a.k]).slice(0,4);
+ const rec=[...S.ex].sort((a,b)=>b.d.localeCompare(a.d)||b.id-a.id).slice(0,5);
+ return `<h1>Hello, ${esc(S.name||'there')}</h1><div class="sub">${new Date().toLocaleDateString('en-US',{month:'long',year:'numeric'})}</div>
+ <div class="hero"><div style="font-size:13px;font-weight:500">Total Spent this ${lp}</div><div style="font-size:38px;font-weight:800;margin-top:4px">${money(tot)}</div><div style="font-size:13px;font-weight:500;margin-top:6px">${pv>0?Math.abs(Math.round((tot-pv)/pv*100))+'% '+(tot>=pv?'more':'less')+' than last '+lp:'Nothing logged last '+lp}</div></div>
+ ${alertBox()}
+ ${seg(PH,'ph')}
+ <div class="card"><div style="font-size:15px;font-weight:700;margin-bottom:8px">Spending by Category</div><div class="row" style="gap:20px">${donut(bc,tot)}<div style="display:flex;flex-direction:column;gap:10px">${top.length?top.map(c=>`<div class="row" style="gap:8px;font-size:12px;font-weight:600;color:var(--mu)"><span style="width:8px;height:8px;border-radius:4px;background:${c.c}"></span>${c.n} ${Math.round(bc[c.k]/tot*100)}%</div>`).join(''):'<div class="sub">No spending yet</div>'}</div></div></div>
+ <div style="font-size:15px;font-weight:700;margin-top:18px">Recent</div>${rec.length?rec.map(item).join(''):'<div class="sub" style="margin-top:8px">Tap + to log your first expense.</div>'}<div style="height:70px"></div>
+ <button class="fab" data-a="add" aria-label="Add expense">${I('plus','#fff',26)}</button>`}
+function stats(){const R=range(PS),L=inP(PS),tot=sum(L),pv=sum(inP(PS,-1)),bc=byCat(L),lp=PS.toLowerCase();
+ let lab,val;
+ if(PS=='Week'){lab=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];val=lab.map(()=>0);L.forEach(e=>val[(dt(e).getDay()+6)%7]+=e.a)}
+ else if(PS=='Month'){const n=Math.ceil((R[1]-R[0])/864e5/7);lab=Array.from({length:n},(_,i)=>'W'+(i+1));val=lab.map(()=>0);L.forEach(e=>val[Math.floor((dt(e).getDate()-1)/7)]+=e.a)}
+ else{lab='JFMAMJJASOND'.split('');val=lab.map(()=>0);L.forEach(e=>val[dt(e).getMonth()]+=e.a)}
+ const mx=Math.max(...val,1),pk=val.indexOf(Math.max(...val));
+ const top=CATS.filter(c=>bc[c.k]).sort((a,b)=>bc[b.k]-bc[a.k]);
+ const chg=pv>0?Math.round((tot-pv)/pv*100):null;
+ const ins=!tot?'No spending yet. Tap + on Home to add an expense.':(chg===null?'':`You spent <b style="color:${chg>0?'var(--rd)':'#34D399'}">${Math.abs(chg)}% ${chg>=0?'more':'less'}</b> than last ${lp}. `)+`Biggest category: <b style="color:var(--tx)">${CM[top[0].k].n}</b> (${Math.round(bc[top[0].k]/tot*100)}%).`;
+ return `<h1>Statistics</h1>${seg(PS,'ps')}
+ <div class="card"><div class="row" style="justify-content:space-between;font-size:15px;font-weight:700;margin-bottom:16px"><span>Spending Flow</span><span style="font-size:13px;color:var(--mu)">${money(tot)}</span></div>
+ <div style="display:flex;justify-content:space-between;gap:4px">${lab.map((l,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:min(30px,100%);height:120px;border-radius:15px;background:var(--line);display:flex;align-items:flex-end"><div style="width:100%;height:${val[i]?Math.max(8,Math.round(val[i]/mx*120)):0}px;border-radius:15px;background:${i==pk&&val[i]?'#3B82F6':'#334E8F'}"></div></div><span style="font-size:11px;font-weight:600;color:${i==pk&&val[i]?'var(--bll)':'var(--mu)'}">${l}</span></div>`).join('')}</div></div>
+ <div class="card row" style="align-items:flex-start;font-size:13px;line-height:1.5;color:var(--mu)">${I('bell','#60A5FA',20)}<div><b style="color:var(--tx)">Insight:</b> ${ins}</div></div>
+ <div style="font-size:15px;font-weight:700;margin-top:18px">Top Categories</div>
+ ${top.length?top.map(c=>{const p=Math.round(bc[c.k]/tot*100);return `<div class="item" style="display:block"><div class="row"><div class="chip" style="background:${c.c}26">${ci(c,c.c,20)}</div><div style="flex:1"><b>${esc(c.n)}</b><small>${p}% OF SPENDING</small></div><div style="font-size:15px;font-weight:700">${money(bc[c.k])}</div></div><div class="bar"><i style="width:${p}%;background:${c.c}"></i></div></div>`}).join(''):'<div class="sub" style="margin-top:8px">Nothing to rank yet.</div>'}`}
+function budget(){const bc=byCat(inP('Month')),cap=+S.mb||0,sp=sum(inP('Month')),alloc=Object.values(S.bud).reduce((a,b)=>a+(+b||0),0);
+ return `<h1>Budget</h1><div class="sub">${new Date().toLocaleDateString('en-US',{month:'long'})}</div>
+ <div class="hero"><div style="font-size:13px;font-weight:500">Monthly budget (tap the amount to edit)</div><label class="row" style="gap:8px;margin-top:6px"><span style="font-size:34px;font-weight:800">₹</span><input class="mb" type="number" inputmode="decimal" min="0" placeholder="Set amount" value="${cap||''}" data-mb="1" aria-label="Monthly budget">${I('edit','#fff',20)}</label>
+ ${cap?`<div class="bar" style="background:#1E3A8A;margin-top:12px"><i style="width:${Math.min(100,sp/cap*100)}%;background:#fff"></i></div><div style="font-size:13px;font-weight:500;margin-top:8px">${money(sp)} spent, ${cap>=sp?money(cap-sp)+' left':money(sp-cap)+' over'}</div>`:`<div style="font-size:13px;font-weight:500;margin-top:10px">${money(sp)} spent this month</div>`}
+ ${alloc?`<div style="font-size:12px;font-weight:500;margin-top:4px;opacity:.85">${money(alloc)} allocated to categories</div>`:''}</div>
+ <div class="row" style="justify-content:space-between;margin-top:18px"><div style="font-size:15px;font-weight:700">Category limits</div><button data-a="newcat" aria-expanded="${NC.open}" style="display:flex;align-items:center;gap:6px;background:var(--card);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:700;color:var(--bll)">${I('plus','#60A5FA',16)}Add or remove</button></div>${NC.open?newPanel():''}
+ ${CATS.map(c=>{const s=bc[c.k]||0,l=+S.bud[c.k]||0,p=l?s/l*100:0;return `<div class="item" style="display:block"><div class="row" style="justify-content:space-between;font-size:14px;font-weight:600"><span class="row" style="gap:8px"><span style="width:8px;height:8px;border-radius:4px;background:${c.c}"></span>${esc(c.n)}</span><label class="row" style="gap:6px;color:var(--mu);font-weight:500;font-size:13px">${money(s)} of ₹<input class="lim" type="number" inputmode="decimal" min="0" placeholder="0" value="${l||''}" data-cat="${c.k}" aria-label="${esc(c.n)} limit"></label></div><div class="row" style="margin-top:10px;gap:10px"><div class="bar" style="flex:1;margin-top:0"><i style="width:${Math.min(100,p)}%;background:${p>=100?'var(--rd)':c.c}"></i></div><button data-a="delcat" data-c="${c.k}" aria-label="Delete ${esc(c.n)}" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex:none">${I('x',DC==c.k?'#F87171':'#94A3B8',16)}</button></div>${p>=S.thr?`<div style="font-size:11px;font-weight:600;margin-top:6px;color:${p>=100?'var(--rd)':'var(--or)'}">${p>=100?'Over limit':'Near limit'}</div>`:''}</div>`}).join('')}
+ <div class="item" style="margin-top:12px;justify-content:space-between"><div><b>Alert at ${S.thr}% of a limit</b><small>Notify me before I overspend</small></div><button class="sw ${S.alert?'on':''}" role="switch" aria-checked="${S.alert}" aria-label="Budget alerts" data-a="alert"></button></div>`}
+function profile(){const row=(i,c,t)=>`<div class="set"><div class="chip" style="background:${c}26">${I(i,c,20)}</div>${t}</div>`;
+ return `<h1>Profile</h1><div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin:18px 0"><button data-a="pick" aria-label="Change profile picture" style="position:relative;width:88px;height:88px;border-radius:28px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:var(--bll)">${S.photo?`<img src="${S.photo}" alt="" style="width:88px;height:88px;border-radius:28px;object-fit:cover">`:esc((S.name.trim()[0]||'?').toUpperCase())}<span style="position:absolute;right:-6px;bottom:-6px;width:30px;height:30px;border-radius:15px;background:var(--bl);display:flex;align-items:center;justify-content:center">${I('edit','#fff',14)}</span></button><input id="pfile" type="file" accept="image/*" hidden>${S.photo?`<button data-a="rmphoto" style="font-size:12px;color:var(--mu);min-height:32px">Remove photo</button>`:''}<div style="font-size:24px;font-weight:800;color:#fff;margin-top:6px">${esc(S.name||'Add your name')}</div></div>
+ <div class="lbl" style="margin-bottom:8px">SETTINGS</div>
+ <div style="background:var(--card);border-radius:20px;overflow:hidden">
+ ${row('user','#60A5FA',`<button data-a="pi" aria-label="Edit personal info" style="flex:1;min-height:40px;display:flex;align-items:center;gap:8px"><span style="flex:1"><span style="display:block;font-size:14px;font-weight:600">Personal info</span><span style="display:block;font-size:15px;font-weight:800;color:#fff;margin-top:2px">${esc(S.name||'Add your name')}</span></span>${I('edit','#94A3B8',16)}</button>`)}
+ ${row('bell','#EF4444',`<span style="flex:1;font-size:14px;font-weight:600">Notifications</span><button class="sw ${S.alert?'on':''}" role="switch" aria-checked="${S.alert}" aria-label="Notifications" data-a="alert"></button>`)}
+ ${row('chart','#8B5CF6',`<button data-a="ar" aria-label="Edit alert rules" style="flex:1;min-height:40px;display:flex;align-items:center;gap:8px"><span style="flex:1;font-size:14px;font-weight:600;text-align:left">Alert rules</span><span style="font-size:13px;color:var(--mu)">At ${S.thr}% of limit</span>${I('edit','#94A3B8',16)}</button>`)}
+ ${row('shield','#06B6D4',`<span style="flex:1;font-size:14px;font-weight:600">Security</span><span style="font-size:13px;color:var(--mu)">Data stays on this device</span>`)}
+ ${row('plus','#10B981',`<span style="flex:1;font-size:14px;font-weight:600">Share app</span><a href="${waHref()}" aria-label="Share on WhatsApp" style="text-decoration:none;color:#fff;background:#16A34A;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700">WhatsApp</a><a href="${mailHref()}" aria-label="Share by email" style="text-decoration:none;color:#fff;background:var(--bl);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700">Email</a>`)}
+ ${row('heart','#EC4899',`<button data-a="credit" style="flex:1;font-size:14px;font-weight:600;min-height:40px;display:flex;align-items:center">Cooked by Anas</button><span style="font-size:13px;color:var(--mu)">Tap to view</span>`)}
+ ${row('trash','#F87171',`<button data-a="clear" style="flex:1;font-size:14px;font-weight:600;color:var(--rd);min-height:40px;display:flex;align-items:center">${armed?'Tap again to delete all expenses':'Clear all expenses'}</button>`)}
+ </div>`}
+function addS(){return `<div class="row" style="margin-bottom:14px"><button class="ib" data-a="back" aria-label="Back">${I('back','#F8FAFC',20)}</button><div style="flex:1;text-align:center;font-size:18px;font-weight:700;margin-right:56px">Add Expense</div></div>
+ <div class="card" style="text-align:center;padding:18px;margin-top:0"><div class="lbl">AMOUNT SPENT</div><div style="margin-top:6px;font-size:54px;font-weight:800"><span style="font-size:30px;color:var(--bll)">₹</span> <span id="amt">${A.amt}</span></div></div>
+ <div class="lbl" style="margin:16px 0 10px">SELECT CATEGORY</div><div class="grid4">${CATS.map(c=>`<button class="cat ${A.c==c.k?'on':''}" data-a="cat" data-c="${c.k}" aria-pressed="${A.c==c.k}"><div>${ci(c,A.c==c.k?'#fff':c.c,24)}</div><span class="cl">${esc(c.n)}</span></button>`).join('')}<button class="cat" data-a="newcat" aria-expanded="${NC.open}"><div>${I('plus','#60A5FA',24)}</div><span class="cl">New</span></button></div>${NC.open?newPanel():''}
+ <label class="field">${I('edit','#94A3B8',20)}<input id="note" placeholder="Add a description" maxlength="40" value="${esc(A.n)}"></label>
+ <label class="field">${I('cal','#94A3B8',20)}<input id="date" type="date" value="${A.d}" max="${ymd(today())}"></label>
+ <div class="keys">${['1','2','3','4','5','6','7','8','9','.','0','del'].map(k=>`<button data-a="key" data-k="${k}" ${k=='del'?'aria-label="Delete digit"':''}>${k=='del'?I('back','#F8FAFC',22):k}</button>`).join('')}</div>`}
+function render(){if(!S.onb)V='welcome';const m=$('#main');
+ m.innerHTML={welcome,home,stats,budget,profile,add:addS}[V]();
+ $('#sheet').innerHTML=V=='profile'?(CR?sheet():PI?nameModal():AR?alertModal():''):'';
+ const f=$('#foot');f.style.display=V=='welcome'?'none':'flex';
+ {const ae=document.activeElement;if(!(ae&&ae.matches&&ae.matches('.lim,.mb,#note,#ncname')))$('#done').style.display='none'}
+ f.innerHTML=V=='add'?'<button class="save" data-a="save">Save Expense</button>':[['home','Home'],['chart','Stats'],['wallet','Budget'],['user','Profile']].map(([i,l],n)=>`<button class="tab ${V==['home','stats','budget','profile'][n]?'on':''}" data-a="tab" data-v="${['home','stats','budget','profile'][n]}">${I(i)}<span>${l}</span></button>`).join('');
+ if(PI&&V=='profile'){const i=$('#pname');if(i){i.focus();i.select()}}}
+let tt;const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2800)};
+function wsave(){const n=(($('#wname')||{}).value||'').trim();if(!n){toast('Please enter your name');return}S.name=n;S.onb=true;save();V='home';render();$('#main').scrollTop=0}
+function pisave(){const n=(($('#pname')||{}).value||'').trim();if(!n){toast('Name cannot be empty');return}S.name=n;save();PI=false;render();toast('Name updated')}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,d=b.dataset;
+ if(a=='tab'){V=d.v;armed=false;PI=false;AR=false;CR=false;DC=null;render();$('#main').scrollTop=0}
+ else if(a=='wsave'){wsave()}
+ else if(a=='pi'){PI=true;render()}
+ else if(a=='closepi'){PI=false;render()}
+ else if(a=='pisave'){pisave()}
+ else if(a=='ph'){PH=d.p;render()}else if(a=='ps'){PS=d.p;render()}
+ else if(a=='add'){A={amt:'0',c:(CATS[0]||{}).k,n:'',d:ymd(today())};V='add';render()}
+ else if(a=='back'){V='home';render()}
+ else if(a=='cat'){A.c=d.c;render()}
+ else if(a=='key'){const k=d.k;if(k=='del')A.amt=A.amt.length>1?A.amt.slice(0,-1):'0';
+  else if(k=='.'){if(!A.amt.includes('.'))A.amt+='.'}
+  else if(A.amt=='0')A.amt=k;
+  else if(A.amt.replace('.','').length<8&&!(A.amt.includes('.')&&A.amt.split('.')[1].length>=2))A.amt+=k;
+  $('#amt').textContent=A.amt}
+ else if(a=='save'){const v=parseFloat(A.amt);if(!(v>0)){toast('Enter an amount first');return}
+  S.ex.push({id:Date.now(),a:Math.round(v*100)/100,c:A.c,n:A.n.trim(),d:A.d});save();
+  V='home';render();
+  const al=alerts();if(al.length)popAlert(al);else toast('Expense saved')}
+ else if(a=='del'){S.ex=S.ex.filter(x=>x.id!=d.id);save();render();toast('Expense removed')}
+ else if(a=='credit'){CR=true;render()}
+ else if(a=='closecr'){CR=false;render()}
+ else if(a=='newcat'){NC.open=!NC.open;render()}
+ else if(a=='ncolor'){NC.c=d.c;render()}
+ else if(a=='addcat'){const n=NC.n.trim();if(!n){toast('Give the category a name');return}
+  if(CATS.some(c=>c.n.toLowerCase()==n.toLowerCase())){toast('That category already exists');return}
+  const k='c'+Date.now();S.cats.push({k,n,c:NC.c});S.bud[k]=0;save();refreshCats();if(A)A.c=k;NC={open:false,n:'',c:NC.c};render();toast(n+' added')}
+ else if(a=='delcat'){const c=CM[d.c];if(!c)return;
+  if(CATS.length<=1){toast('Keep at least one category');return}
+  const n=S.ex.filter(x=>x.c==d.c).length;
+  if(n&&d.c=='other'){toast('Delete or move the expenses in Other first');return}
+  if(n&&DC!=d.c){DC=d.c;toast(c.n+' has '+n+' expense'+(n>1?'s':'')+'. Tap X again to move them to Other');render();return}
+  if(n){if(!S.cats.some(x=>x.k=='other'))S.cats.push({k:'other',n:'Other',c:'#94A3B8'});S.ex.forEach(x=>{if(x.c==d.c)x.c='other'})}
+  S.cats=S.cats.filter(x=>x.k!=d.c);delete S.bud[d.c];DC=null;refreshCats();if(A&&A.c==d.c)A.c=S.cats[0].k;save();render();toast(c.n+' removed')}
+ else if(a=='abclose'){$('#abar').style.display='none'}
+ else if(a=='done'){const x=document.activeElement;const was=x&&x.matches&&x.matches('.lim,.mb');if(x&&x.blur)x.blur();$('#done').style.display='none';if(was)toast('Saved')}
+ else if(a=='ar'){AR=true;render()}
+ else if(a=='closear'){AR=false;render()}
+ else if(a=='arp'){const i=$('#arval');if(i)i.value=d.v}
+ else if(a=='arsave'){const v=Math.round(parseFloat(($('#arval')||{}).value));if(!(v>=1&&v<=100)){toast('Enter a number from 1 to 100');return}S.thr=v;save();AR=false;render();toast('Alert set at '+v+'%')}
+ else if(a=='pick'){$('#pfile').click()}
+ else if(a=='rmphoto'){S.photo='';save();render()}
+ else if(a=='alert'){S.alert=!S.alert;save();render()}
+ else if(a=='clear'){if(armed){S.ex=[];save();armed=false;toast('All expenses cleared')}else armed=true;render()}});
+document.addEventListener('input',e=>{if(e.target.id=='note')A.n=e.target.value;if(e.target.id=='ncname')NC.n=e.target.value;if(e.target.id=='date'&&e.target.value)A.d=e.target.value});
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;if(e.target.id=='wname')wsave();else if(e.target.id=='pname')pisave();else if(e.target.id=='arval'){const b=document.querySelector('[data-a=arsave]');if(b)b.click()}});
+/* Re-draw only after the person has left the budget inputs, so the keyboard does not flicker */
+const later=()=>setTimeout(()=>{const a=document.activeElement;if(!(a&&a.matches&&a.matches('.lim,.mb')))render()},80);
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.cat){S.bud[t.dataset.cat]=Math.max(0,parseFloat(t.value)||0);save();later()}
+ if(t.dataset.mb){S.mb=Math.max(0,parseFloat(t.value)||0);save();later()}
+ if(t.id=='pfile'&&t.files[0]){const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),z=240,s=Math.min(im.width,im.height);c.width=c.height=z;c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,z,z);S.photo=c.toDataURL('image/jpeg',0.85);save();render();toast('Profile picture updated')};im.onerror=()=>toast('Could not read that image');im.src=rd.result};rd.readAsDataURL(t.files[0])}});
+/* Keyboard: keep the field being typed in visible above the keyboard */
+let kb;
+document.addEventListener('focusin',e=>{const t=e.target;if(!(t.matches&&t.matches('.lim,.mb,#note,#ncname')))return;
+ clearTimeout(kb);$('#main').style.paddingBottom='45vh';$('#done').style.display='flex';
+ setTimeout(()=>{try{t.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},350)});
+document.addEventListener('focusout',()=>{clearTimeout(kb);kb=setTimeout(()=>{const a=document.activeElement;if(!(a&&a.matches&&a.matches('.lim,.mb,#note,#ncname'))){$('#main').style.paddingBottom='';$('#done').style.display='none'}},250)});
+$('#done').innerHTML=I('check','#fff',26);
+/* Keep the keyboard open while the tick button is pressed, so the change is saved by the tap itself */
+['pointerdown','mousedown','touchstart'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest('#done'))e.preventDefault()},{passive:false}));
+render();
+</script></body></html>
