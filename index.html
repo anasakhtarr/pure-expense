@@ -73,6 +73,9 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g
 const SHARE_LINK='';
 const shareMsg='Check out Pure Expense Tracker, a simple app to track your daily expenses and budget.'+(SHARE_LINK?' '+SHARE_LINK:'');
 const waHref=()=>'https://wa.me/?text='+encodeURIComponent(shareMsg);
+const shareBtns=()=>{const st='color:#fff;border-radius:10px;padding:0 14px;min-height:38px;display:inline-flex;align-items:center;font-size:12px;font-weight:700;';
+ if(window.Android&&Android.shareApp)return `<button data-a="shareapk" data-z="0" aria-label="Share the app file" style="${st}background:#16A34A">APK</button><button data-a="shareapk" data-z="1" aria-label="Share the app as a zip file" style="${st}background:var(--bl)">ZIP</button>`;
+ return `<a href="${waHref()}" aria-label="Share on WhatsApp" style="${st}text-decoration:none;background:#16A34A">WhatsApp</a><a href="${mailHref()}" aria-label="Share by email" style="${st}text-decoration:none;background:var(--bl)">Email</a>`};
 const mailHref=()=>'mailto:?subject='+encodeURIComponent('Pure Expense Tracker')+'&body='+encodeURIComponent(shareMsg);
 /* Fresh storage key (pet3): old demo data from earlier versions is ignored */
 let S={ex:[],bud:{},mb:0,alert:true,thr:80,name:'',onb:false,cats:null,photo:''};
@@ -107,11 +110,12 @@ function donut(bc,tot){const sz=132,r=50,m=sz/2,C=2*Math.PI*r;let off=0;
 const when=d=>{const t=ymd(today()),y=new Date();y.setDate(y.getDate()-1);return d==t?'Today':d==ymd(y)?'Yesterday':new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})};
 const item=e=>{const c=CM[e.c]||{n:'Other',c:'#94A3B8'};return `<div class="item"><div class="chip" style="background:${c.c}26">${ci(c,c.c,20)}</div><div style="flex:1;min-width:0"><b>${esc(e.n||c.n)}</b><small>${c.n} · ${when(e.d)}</small></div><div style="font-size:14px;font-weight:700;color:var(--rd)">-${money(e.a)}</div><button class="ib" style="width:36px;height:36px;border-radius:10px;background:transparent" data-a="del" data-id="${e.id}" aria-label="Delete expense">${I('x','#94A3B8',16)}</button></div>`};
 function welcome(){return `<div style="padding-top:12vh"><div style="width:72px;height:72px;border-radius:22px;background:var(--bl);display:flex;align-items:center;justify-content:center">${I('wallet','#fff',34)}</div><h1 style="font-size:30px;font-weight:800;margin-top:24px;color:#fff">Welcome to Pure Expense Tracker</h1><div class="sub" style="font-size:15px;margin-top:8px">Let's get started. What should we call you?</div><label class="field" style="margin-top:24px">${I('user','#94A3B8',20)}<input id="wname" placeholder="Your name" maxlength="24" autocomplete="off" style="font-size:16px;font-weight:600"></label><button data-a="wsave" class="save" style="display:block;margin-top:16px">Continue</button></div>`}
+function syncNative(){try{if(!window.Android||!Android.saveBudget)return;const m=byCat(inP('Month'));Android.saveBudget(JSON.stringify({on:S.alert,thr:S.thr,month:ymd(today()).slice(0,7),mb:+S.mb||0,spent:sum(inP('Month')),cats:CATS.map(c=>({n:c.n,limit:+S.bud[c.k]||0,spent:m[c.k]||0}))}))}catch(e){}}
 function alerts(){if(!S.alert)return[];const o=[],mb=+S.mb||0,bc=byCat(inP('Month')),tsp=sum(inP('Month'));
  if(mb&&tsp/mb*100>=S.thr)o.push(tsp>mb?'You are over your monthly budget ('+money(tsp)+' of '+money(mb)+')':'You have used '+Math.round(tsp/mb*100)+'% of your monthly budget ('+money(tsp)+' of '+money(mb)+')');
  CATS.forEach(c=>{const l=+S.bud[c.k]||0,x=bc[c.k]||0;if(l&&x/l*100>=S.thr)o.push(esc(c.n)+': '+Math.round(x/l*100)+'% of its limit ('+money(x)+' of '+money(l)+')')});return o}
 const alertBox=()=>{const a=alerts();return a.length?`<div role="alert" style="margin-top:14px;background:#431407;border:1px solid #9A3412;border-radius:16px;padding:12px 14px"><div style="font-size:13px;font-weight:700;color:#FDBA74;margin-bottom:6px">Budget alert (at ${S.thr}%)</div>${a.map(t=>`<div style="font-size:13px;line-height:1.5;color:#FED7AA">${t}</div>`).join('')}</div>`:''};
-let at;function popAlert(a){const e=$('#abar');e.innerHTML=`<button data-a="abclose" role="alert" style="display:block;width:100%;text-align:left;background:#431407;border:1px solid #EA580C;border-radius:14px;padding:12px 14px;color:#FED7AA;box-shadow:0 8px 24px #000A"><div style="font-size:13px;font-weight:700;color:#FDBA74">Budget alert</div>${a.map(t=>`<div style="font-size:13px;margin-top:4px">${t}</div>`).join('')}<div style="font-size:11px;color:#FDBA74;margin-top:6px">Tap to dismiss</div></button>`;e.style.display='block';clearTimeout(at);at=setTimeout(()=>{e.style.display='none'},9000);try{navigator.vibrate&&navigator.vibrate(200)}catch(x){}}
+let at;function popAlert(a){try{if(window.Android&&Android.notify){const t=document.createElement('div');t.innerHTML=a.join('\n');Android.notify('Budget alert',t.textContent)}}catch(x){}const e=$('#abar');e.innerHTML=`<button data-a="abclose" role="alert" style="display:block;width:100%;text-align:left;background:#431407;border:1px solid #EA580C;border-radius:14px;padding:12px 14px;color:#FED7AA;box-shadow:0 8px 24px #000A"><div style="font-size:13px;font-weight:700;color:#FDBA74">Budget alert</div>${a.map(t=>`<div style="font-size:13px;margin-top:4px">${t}</div>`).join('')}<div style="font-size:11px;color:#FDBA74;margin-top:6px">Tap to dismiss</div></button>`;e.style.display='block';clearTimeout(at);at=setTimeout(()=>{e.style.display='none'},9000);try{navigator.vibrate&&navigator.vibrate(200)}catch(x){}}
 function home(){const L=inP(PH),tot=sum(L),pv=sum(inP(PH,-1)),bc=byCat(L),lp=PH.toLowerCase();
  const top=CATS.filter(c=>bc[c.k]).sort((a,b)=>bc[b.k]-bc[a.k]).slice(0,4);
  const rec=[...S.ex].sort((a,b)=>b.d.localeCompare(a.d)||b.id-a.id).slice(0,5);
@@ -153,7 +157,7 @@ function profile(){const row=(i,c,t)=>`<div class="set"><div class="chip" style=
  ${row('bell','#EF4444',`<span style="flex:1;font-size:14px;font-weight:600">Notifications</span><button class="sw ${S.alert?'on':''}" role="switch" aria-checked="${S.alert}" aria-label="Notifications" data-a="alert"></button>`)}
  ${row('chart','#8B5CF6',`<button data-a="ar" aria-label="Edit alert rules" style="flex:1;min-height:40px;display:flex;align-items:center;gap:8px"><span style="flex:1;font-size:14px;font-weight:600;text-align:left">Alert rules</span><span style="font-size:13px;color:var(--mu)">At ${S.thr}% of limit</span>${I('edit','#94A3B8',16)}</button>`)}
  ${row('shield','#06B6D4',`<span style="flex:1;font-size:14px;font-weight:600">Security</span><span style="font-size:13px;color:var(--mu)">Data stays on this device</span>`)}
- ${row('plus','#10B981',`<span style="flex:1;font-size:14px;font-weight:600">Share app</span><a href="${waHref()}" aria-label="Share on WhatsApp" style="text-decoration:none;color:#fff;background:#16A34A;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700">WhatsApp</a><a href="${mailHref()}" aria-label="Share by email" style="text-decoration:none;color:#fff;background:var(--bl);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:700">Email</a>`)}
+ ${row('plus','#10B981',`<span style="flex:1;font-size:14px;font-weight:600">Share app</span>${shareBtns()}`)}
  ${row('heart','#EC4899',`<button data-a="credit" style="flex:1;font-size:14px;font-weight:600;min-height:40px;display:flex;align-items:center">Cooked by Anas</button><span style="font-size:13px;color:var(--mu)">Tap to view</span>`)}
  ${row('trash','#F87171',`<button data-a="clear" style="flex:1;font-size:14px;font-weight:600;color:var(--rd);min-height:40px;display:flex;align-items:center">${armed?'Tap again to delete all expenses':'Clear all expenses'}</button>`)}
  </div>`}
@@ -163,7 +167,7 @@ function addS(){return `<div class="row" style="margin-bottom:14px"><button clas
  <label class="field">${I('edit','#94A3B8',20)}<input id="note" placeholder="Add a description" maxlength="40" value="${esc(A.n)}"></label>
  <label class="field">${I('cal','#94A3B8',20)}<input id="date" type="date" value="${A.d}" max="${ymd(today())}"></label>
  <div class="keys">${['1','2','3','4','5','6','7','8','9','.','0','del'].map(k=>`<button data-a="key" data-k="${k}" ${k=='del'?'aria-label="Delete digit"':''}>${k=='del'?I('back','#F8FAFC',22):k}</button>`).join('')}</div>`}
-function render(){if(!S.onb)V='welcome';const m=$('#main');
+function render(){syncNative();if(!S.onb)V='welcome';const m=$('#main');
  m.innerHTML={welcome,home,stats,budget,profile,add:addS}[V]();
  $('#sheet').innerHTML=V=='profile'?(CR?sheet():PI?nameModal():AR?alertModal():''):'';
  const f=$('#foot');f.style.display=V=='welcome'?'none':'flex';
@@ -207,6 +211,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b
   if(n&&DC!=d.c){DC=d.c;toast(c.n+' has '+n+' expense'+(n>1?'s':'')+'. Tap X again to move them to Other');render();return}
   if(n){if(!S.cats.some(x=>x.k=='other'))S.cats.push({k:'other',n:'Other',c:'#94A3B8'});S.ex.forEach(x=>{if(x.c==d.c)x.c='other'})}
   S.cats=S.cats.filter(x=>x.k!=d.c);delete S.bud[d.c];DC=null;refreshCats();if(A&&A.c==d.c)A.c=S.cats[0].k;save();render();toast(c.n+' removed')}
+ else if(a=='shareapk'){try{Android.shareApp(d.z=='1')}catch(e){toast('Could not share the app')}}
  else if(a=='abclose'){$('#abar').style.display='none'}
  else if(a=='done'){const x=document.activeElement;const was=x&&x.matches&&x.matches('.lim,.mb');if(x&&x.blur)x.blur();$('#done').style.display='none';if(was)toast('Saved')}
  else if(a=='ar'){AR=true;render()}
